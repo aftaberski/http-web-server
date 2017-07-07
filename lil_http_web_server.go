@@ -1,34 +1,47 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net"
 	"strings"
 )
 
 func main() {
-	l, err := net.Listen("tcp", ":8888")
-	fmt.Printf("Listening at :8888...")
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", ":8888")
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	l, err := net.ListenTCP("tcp", tcpAddr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Listening at :8888...")
 	defer l.Close()
 
 	for {
+		fmt.Println("Waiting for connection...............")
 		// Wait for a connection.
-		conn, err := l.Accept()
+		conn, err := l.AcceptTCP()
 		if err != nil {
+			fmt.Println("CONNECTION ERROR:")
 			log.Fatal(err)
 		}
 
-		scanner := bufio.NewScanner(conn)
-		scanner.Scan()
+		var reqBody = make([]byte, 1024)
+		bytesRead, err := conn.Read(reqBody)
+		if err != nil {
+			fmt.Println("READ ERROR:")
+			log.Fatal(err)
+		}
+		strReqBody := string(reqBody[:bytesRead])
+		reqStringArr := strings.Split(strReqBody, "\n")
 
-		requestStr := scanner.Text()
-		uri := strings.Split(requestStr, " ")[1]
+		uri := strings.Split(reqStringArr[0], " ")[1]
+		fmt.Println(uri)
 
 		var headers string
 		var body []byte
@@ -37,30 +50,39 @@ func main() {
 		case "/hello":
 			headers = "HTTP/1.1 200 OK\r\n\r\n"
 			body = []byte("Hello, World!")
+			go handleConn(conn, headers, body, rand.Intn(1000))
 		case "/puppy":
 			body, err = ioutil.ReadFile("puppy.jpg")
 			if err != nil {
+				fmt.Println("READ FILE ERROR:")
 				log.Fatal(err)
 			}
 
 			contentLength := len(body)
-			// TODO make cute;
 			headers = fmt.Sprintf("HTTP/1.1 200 OK\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n", contentLength)
+			go handleConn(conn, headers, body, rand.Intn(1000))
 		default:
 			headers = "HTTP/1.1 404 Not Found\r\n\r\n"
 			body = []byte("404 There's nothing here!")
+			go handleConn(conn, headers, body, rand.Intn(1000))
 		}
 
-		fmt.Println(headers)
-		// Handle the connection in a new goroutine.
-		// The loop then returns to accepting, so that
-		// multiple connections may be served concurrently.
-		go func(c net.Conn) {
-			// Write response to connection
-			c.Write([]byte(headers))
-			c.Write(body)
-			// Shut down the connection.
-			c.Close()
-		}(conn)
+		fmt.Println("HEADERS:", headers)
+	}
+}
+
+func handleConn(c net.Conn, headers string, body []byte, random int) {
+	fmt.Println("HANDLE CONN:", random)
+	// Shut down the connection.
+	defer c.Close()
+	// Write response to connection
+	_, err := c.Write([]byte(headers))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = c.Write(body)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
