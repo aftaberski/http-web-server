@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -27,21 +26,19 @@ func main() {
 		fmt.Println("Waiting for connection...............")
 		// Wait for a connection.
 		conn, err := l.AcceptTCP()
+
 		if err != nil {
 			fmt.Println("CONNECTION ERROR:")
 			log.Fatal(err)
 		}
-
+		// Keep reading until reach EOF
 		var reqBody = make([]byte, 1024)
 		bytesRead, err := conn.Read(reqBody)
 		if err != nil {
 			// This is a quick fix we came up with so we can keep working
 			// Seems as though its receiving a null byte
-			if err == io.EOF {
-				continue
-			}
-			fmt.Println("READ ERROR:")
-			log.Fatal(err)
+			fmt.Println("Read error", err)
+			continue
 		}
 		strReqBody := string(reqBody[:bytesRead])
 		reqStringArr := strings.Split(strReqBody, "\n")
@@ -79,7 +76,6 @@ func main() {
 
 func handleConn(c net.Conn, headers string, body []byte, random int) {
 	fmt.Println("HANDLE CONN:", random)
-	// Shut down the connection.
 	defer c.Close()
 	// Write response to connection
 	_, err := c.Write([]byte(headers))
