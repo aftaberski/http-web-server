@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -34,6 +35,11 @@ func main() {
 		var reqBody = make([]byte, 1024)
 		bytesRead, err := conn.Read(reqBody)
 		if err != nil {
+			// This is a quick fix we came up with so we can keep working
+			// Seems as though its receiving a null byte
+			if err == io.EOF {
+				continue
+			}
 			fmt.Println("READ ERROR:")
 			log.Fatal(err)
 		}
