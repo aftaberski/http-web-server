@@ -24,10 +24,9 @@ func main() {
 			log.Fatal(err)
 		}
 
-		// Get the request
-		// TODO switch to bufio.Scanner
 		scanner := bufio.NewScanner(conn)
 		scanner.Scan()
+
 		requestStr := scanner.Text()
 		uri := strings.Split(requestStr, " ")[1]
 
@@ -51,8 +50,6 @@ func main() {
 			headers = "HTTP/1.1 404 Not Found\r\n\r\n"
 			body = []byte("404 There's nothing here!")
 		}
-
-		fmt.Println("lol")
 
 		fmt.Println(headers)
 		// Handle the connection in a new goroutine.
