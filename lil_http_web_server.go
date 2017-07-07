@@ -29,7 +29,7 @@ func main() {
 		// The loop then returns to accepting, so that
 		// multiple connections may be served concurrently.
 		go func(c net.Conn) {
-			// Echo all incoming data.
+			// Write response to connection
 			c.Write([]byte(response))
 			// Shut down the connection.
 			c.Close()
