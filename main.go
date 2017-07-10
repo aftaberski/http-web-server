@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -15,8 +14,8 @@ func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	// TODO: make HTTPRequest type
-	scanner := bufio.NewScanner(conn)
-	req, err := http.NewRequest(scanner)
+	// scanner := bufio.NewScanner(conn)
+	req, err := http.NewRequest(conn)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,8 +25,15 @@ func handleConnection(conn net.Conn) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// get route if exists and return a handler
+	// Will need something like:
+	// {"GET": {"/route-name": handlerFn,
+	//          "/other": otherHandlerFn}}
 	switch req.URI {
 	case "/hello":
+		// this is really the handler ->
+		// Takes a Request and returns a Response
 		headers = "HTTP/1.1 200 OK\r\n\r\n"
 		body = []byte("Hello, World!")
 	case "/puppy":

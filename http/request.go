@@ -3,69 +3,10 @@ package http
 import (
 	"bufio"
 	"errors"
+	"net"
 	"strconv"
 	"strings"
 )
-
-// Request holds an HTTP Request
-type Request struct {
-	Method   Method
-	URI      string
-	Protocol Protocol
-	Headers  []string
-	Body     []byte
-}
-
-// // NewRequest used to make new Request structs
-// func NewRequest(scanner *bufio.Scanner) Request {
-// 	headers := make([]string, 0)
-// 	headers = append(headers, "headers")
-// 	body := make([]byte, 0)
-// 	return Request{"method", "uri", "protocol", headers, body}
-// }
-
-// -----------------METHODS------------------
-
-// Method for Request
-type Method string
-
-// Constants used to create Methods
-const (
-	GET           Method = "GET"
-	POST          Method = "POST"
-	InvalidMethod Method = "INVALID"
-)
-
-func newMethod(method string) (Method, error) {
-	switch method {
-	case "GET":
-		return GET, nil
-	case "POST":
-		return POST, nil
-	default:
-		return InvalidMethod, errors.New("Invalid method or method not supported")
-	}
-}
-
-// --------------------PROTOCOLS---------------------
-
-// Protocol for Request
-type Protocol string
-
-// Constants used to create Protocols
-const (
-	HTTP11          Protocol = "HTTP/1.1"
-	InvalidProtocol Protocol = "INVALID"
-)
-
-func newProtocol(protocol string) (Protocol, error) {
-	switch protocol {
-	case "HTTP/1.1":
-		return HTTP11, nil
-	default:
-		return InvalidProtocol, errors.New("Invalid protocol or protocol not supported")
-	}
-}
 
 // -----------------REQUEST PARSING------------------
 
@@ -135,9 +76,18 @@ func GetBody(scanner *bufio.Scanner, contentLength int64) []byte {
 	return bytes
 }
 
-// NewRequest instantiates a Request
-func NewRequest(scanner *bufio.Scanner) (*Request, error) {
+// Request holds an HTTP Request
+type Request struct {
+	Method   Method
+	URI      string
+	Protocol Protocol
+	Headers  []string
+	Body     []byte
+}
 
+// NewRequest instantiates a Request
+func NewRequest(conn net.Conn) (*Request, error) {
+	scanner := bufio.NewScanner(conn)
 	method, uri, protocol, err := GetStatusLine(scanner)
 	if err != nil {
 		return nil, err
