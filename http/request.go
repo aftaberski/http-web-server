@@ -52,11 +52,13 @@ func GetHeaders(scanner *bufio.Scanner) []string {
 // GetContentLength checks headers for "Content-Length" key
 // when the method is POST
 func GetContentLength(headers []string) (int64, error) {
-	contentLengthStr := "Content-Length:"
 	for _, header := range headers {
-		if strings.Contains(header, contentLengthStr) {
-			sArr := strings.Split(header, " ")
-			contentLength, _ := strconv.ParseInt(sArr[1], 0, 64)
+		if strings.Contains(header, "Content-Length:") {
+			stringArr := strings.Split(header, " ")
+			contentLength, err := strconv.ParseInt(stringArr[1], 0, 64)
+			if err != nil {
+				return -1, errors.New("Could not parse Content-Length header into int")
+			}
 			return contentLength, nil
 		}
 	}
