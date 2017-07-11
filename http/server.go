@@ -72,5 +72,5 @@ func (server *Server) Run(port int64) {
 	}
 }
 
-// Handler type passed Server.AddRoutes method
+// Handler type passed Server.AddRoute method
 type Handler func(Request) (*Response, error)
