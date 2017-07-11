@@ -21,6 +21,9 @@ func NewResponse(proto string, statusCode string, statusMessage string, headers 
 	return &Response{protocol, statusCode, statusMessage, headers, body}, nil
 }
 
+// Format reformats a byte struct into a byte array
+// in order to write it to a connection
+// TODO: Refactor! DRY
 func (res *Response) Format() []byte {
 	// Write status line ex. HTTP/1.1 500 Internal Server Error
 	formattedRes := []byte(fmt.Sprintf("%s %s %s\r\n", res.Protocol, res.StatusCode, res.StatusMessage))
@@ -36,6 +39,6 @@ func (res *Response) Format() []byte {
 	if len(res.Body) > 0 {
 		formattedRes = append(formattedRes, res.Body...)
 	}
-	fmt.Println(formattedRes)
+
 	return formattedRes
 }

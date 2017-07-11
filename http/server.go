@@ -11,9 +11,6 @@ type Server struct {
 	AvailableRoutes map[Method]map[string]Handler
 }
 
-// Handler used to create handlers
-type Handler func(Request) (*Response, error)
-
 // NewServer instantiates a new server
 func NewServer() *Server {
 	server := Server{}
@@ -73,3 +70,6 @@ func (server *Server) Run(port int64) {
 		server.handleConnection(conn)
 	}
 }
+
+// Handler used to create handlers
+type Handler func(Request) (*Response, error)
