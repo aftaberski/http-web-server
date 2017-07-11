@@ -8,19 +8,19 @@ import (
 
 // Server instance
 type Server struct {
-	AvailableRoutes map[Method]map[string]Handler
+	AvailableRoutes map[method]map[string]Handler
 }
 
 // NewServer instantiates a new Server instance
 func NewServer() *Server {
 	server := Server{}
-	server.AvailableRoutes = make(map[Method]map[string]Handler)
+	server.AvailableRoutes = make(map[method]map[string]Handler)
 	return &server
 }
 
 // AddRoute adds a route to a server instance
 // that calls the handler provided on the request
-func (server *Server) AddRoute(method Method, uri string, handler Handler) {
+func (server *Server) AddRoute(method method, uri string, handler Handler) {
 	if _, ok := server.AvailableRoutes[method]; !ok {
 		server.AvailableRoutes[method] = make(map[string]Handler)
 	}

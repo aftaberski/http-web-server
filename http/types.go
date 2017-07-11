@@ -5,16 +5,16 @@ import "errors"
 // -----------------METHODS------------------
 
 // Method for Request
-type Method string
+type method string
 
 // Constants used to create Methods
 const (
-	GET           Method = "GET"
-	POST          Method = "POST"
-	InvalidMethod Method = "INVALID"
+	GET           method = "GET"
+	POST          method = "POST"
+	InvalidMethod method = "INVALID"
 )
 
-func newMethod(method string) (Method, error) {
+func newMethod(method string) (method, error) {
 	switch method {
 	case "GET":
 		return GET, nil
@@ -28,15 +28,15 @@ func newMethod(method string) (Method, error) {
 // --------------------PROTOCOLS---------------------
 
 // Protocol for Request/Response
-type Protocol string
+type protocol string
 
-// Constants used to create Protocols
+// Constants used to create protocols
 const (
-	HTTP11          Protocol = "HTTP/1.1"
-	InvalidProtocol Protocol = "INVALID"
+	HTTP11          protocol = "HTTP/1.1"
+	InvalidProtocol protocol = "INVALID"
 )
 
-func newProtocol(protocol string) (Protocol, error) {
+func newProtocol(protocol string) (protocol, error) {
 	switch protocol {
 	case "HTTP/1.1":
 		return HTTP11, nil

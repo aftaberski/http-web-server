@@ -7,7 +7,7 @@ import (
 
 // Response holds an HTTP response
 type Response struct {
-	Protocol      Protocol
+	Protocol      protocol
 	StatusCode    string
 	StatusMessage string
 	Headers       []string

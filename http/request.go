@@ -8,11 +8,9 @@ import (
 	"strings"
 )
 
-// -----------------REQUEST PARSING------------------
-
 // getStatusLine parses a status line of an HTTP request
 // ex. GET / HTTP/1.1
-func getStatusLine(scanner *bufio.Scanner) (Method, string, Protocol, error) {
+func getStatusLine(scanner *bufio.Scanner) (method, string, protocol, error) {
 	scanner.Scan()
 	status := scanner.Text()
 
@@ -48,7 +46,7 @@ func getHeaders(scanner *bufio.Scanner) []string {
 	return headers
 }
 
-// GetContentLength checks headers for "Content-Length" key
+// getContentLength checks headers for "Content-Length" key
 // when the method is POST
 func getContentLength(headers []string) (int64, error) {
 	for _, header := range headers {
@@ -79,9 +77,9 @@ func getBody(scanner *bufio.Scanner, contentLength int64) []byte {
 
 // Request holds an HTTP Request
 type Request struct {
-	Method   Method
+	Method   method
 	URI      string
-	Protocol Protocol
+	Protocol protocol
 	Headers  []string
 	Body     []byte
 }
