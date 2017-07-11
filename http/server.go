@@ -11,14 +11,15 @@ type Server struct {
 	AvailableRoutes map[Method]map[string]Handler
 }
 
-// NewServer instantiates a new server
+// NewServer instantiates a new Server instance
 func NewServer() *Server {
 	server := Server{}
 	server.AvailableRoutes = make(map[Method]map[string]Handler)
 	return &server
 }
 
-// AddRoute adds a route to a server
+// AddRoute adds a route to a server instance
+// that calls the handler provided on the request
 func (server *Server) AddRoute(method Method, uri string, handler Handler) {
 	if _, ok := server.AvailableRoutes[method]; !ok {
 		server.AvailableRoutes[method] = make(map[string]Handler)
@@ -42,7 +43,7 @@ func (server *Server) handleConnection(conn net.Conn) {
 	if err != nil {
 		log.Fatal("Error when invoking handler:\r\n", err)
 	}
-	formattedRes := response.Format()
+	formattedRes := response.Bytes()
 
 	_, err = conn.Write(formattedRes)
 	if err != nil {
@@ -71,5 +72,5 @@ func (server *Server) Run(port int64) {
 	}
 }
 
-// Handler used to create handlers
+// Handler type passed Server.AddRoutes method
 type Handler func(Request) (*Response, error)

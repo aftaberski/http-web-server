@@ -36,7 +36,7 @@ func (res *Response) Bytes() []byte {
 		buffer.WriteString(fmt.Sprintf("%s\r\n", header))
 	}
 
-	buffer.WriteString("\r\n") // blank line between headers and body
+	buffer.WriteString("\r\n")
 
 	if len(res.Body) > 0 {
 		buffer.Write(res.Body)

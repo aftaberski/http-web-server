@@ -10,9 +10,9 @@ import (
 
 // -----------------REQUEST PARSING------------------
 
-// GetStatusLine parses a status line of an HTTP request
+// getStatusLine parses a status line of an HTTP request
 // ex. GET / HTTP/1.1
-func GetStatusLine(scanner *bufio.Scanner) (Method, string, Protocol, error) {
+func getStatusLine(scanner *bufio.Scanner) (Method, string, Protocol, error) {
 	scanner.Scan()
 	status := scanner.Text()
 
@@ -33,8 +33,7 @@ func GetStatusLine(scanner *bufio.Scanner) (Method, string, Protocol, error) {
 
 }
 
-// GetHeaders gets the headers of an HTTP request
-func GetHeaders(scanner *bufio.Scanner) []string {
+func getHeaders(scanner *bufio.Scanner) []string {
 	headers := make([]string, 0)
 
 	for scanner.Scan() {
@@ -51,7 +50,7 @@ func GetHeaders(scanner *bufio.Scanner) []string {
 
 // GetContentLength checks headers for "Content-Length" key
 // when the method is POST
-func GetContentLength(headers []string) (int64, error) {
+func getContentLength(headers []string) (int64, error) {
 	for _, header := range headers {
 		if strings.Contains(header, "Content-Length:") {
 			stringArr := strings.Split(header, " ")
@@ -67,7 +66,7 @@ func GetContentLength(headers []string) (int64, error) {
 
 // GetBody gets the body of an HTTP request
 // Currently just returns empty byte array
-func GetBody(scanner *bufio.Scanner, contentLength int64) []byte {
+func getBody(scanner *bufio.Scanner, contentLength int64) []byte {
 	bytes := make([]byte, contentLength)
 	scanner.Split(bufio.ScanBytes)
 	var i int64
@@ -90,23 +89,23 @@ type Request struct {
 // NewRequest instantiates a Request
 func NewRequest(conn net.Conn) (*Request, error) {
 	scanner := bufio.NewScanner(conn)
-	method, uri, protocol, err := GetStatusLine(scanner)
+	method, uri, protocol, err := getStatusLine(scanner)
 	if err != nil {
 		return nil, err
 	}
 
-	headers := GetHeaders(scanner)
+	headers := getHeaders(scanner)
 
 	var body []byte
 
 	// If POST request, check for 'Content-Length' header
 	// and get post body
 	if method == POST {
-		contentLength, err := GetContentLength(headers)
+		contentLength, err := getContentLength(headers)
 		if err != nil {
 			return nil, errors.New("Content-Length header required for POST request")
 		}
-		body = GetBody(scanner, contentLength)
+		body = getBody(scanner, contentLength)
 	}
 
 	request := Request{method, uri, protocol, headers, body}
