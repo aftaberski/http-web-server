@@ -25,7 +25,7 @@ func main() {
 
 `NewServer()`: creates a new `Server` instance 
 
-`AddRoutes()`: adds routes to your server instance. The method takes an HTTP `Method` type (currently either `GET` or `POST`), a route, and a `Handler`.
+`AddRoutes()`: adds routes to your server instance. The method takes an HTTP `method` type (currently either `GET` or `POST`), a route, and a `Handler`.
 
 `Handler`: a function type that takes a `Request` and returns a reference to the `Response` and an error.
 
