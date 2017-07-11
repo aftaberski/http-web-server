@@ -57,22 +57,33 @@ func handleConnection(conn net.Conn) {
 	conn.Write(body)
 }
 
+func helloHandler(request http.Request) (*http.Response, error) {
+	headers := make([]string, 0)
+	body := []byte("Hello World")
+
+	return http.NewResponse("HTTP/1.1", "200", "OK", headers, body)
+}
+
 func main() {
-	l, err := net.Listen("tcp", ":8888")
-	fmt.Println("Listening at :8888...")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer l.Close()
-	for {
-		// Wait for a connection.
-		conn, err := l.Accept()
-		if err != nil {
-			log.Fatal(err)
-		}
-		// Handle the connection in a new goroutine.
-		// The loop then returns to accepting, so that
-		// multiple connections may be served concurrently.
-		go handleConnection(conn)
-	}
+	server := http.NewServer()
+	server.AddRoute(http.GET, "/hello", helloHandler)
+	server.Run(8888)
+
+	// l, err := net.Listen("tcp", ":8888")
+	// fmt.Println("Listening at :8888...")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer l.Close()
+	// for {
+	// 	// Wait for a connection.
+	// 	conn, err := l.Accept()
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	// Handle the connection in a new goroutine.
+	// 	// The loop then returns to accepting, so that
+	// 	// multiple connections may be served concurrently.
+	// 	go handleConnection(conn)
+	// }
 }

@@ -12,7 +12,7 @@ type Server struct {
 }
 
 // Handler used to create handlers
-type Handler func(Request) (Response, error)
+type Handler func(Request) (*Response, error)
 
 // NewServer instantiates a new server
 func NewServer() *Server {
@@ -38,12 +38,19 @@ func (server *Server) handleConnection(conn net.Conn) {
 	}
 	if _, ok := server.AvailableRoutes[req.Method][req.URI]; !ok {
 		// TODO return default 404 response
-		// handleErrors
-		log.Fatal("Route not registered: %s", req.URI)
+		log.Fatalf("Route not registered: %s\r\n", req.URI)
 	}
 	handler := server.AvailableRoutes[req.Method][req.URI]
 	response, err := handler(*req)
-	// TODO: Create writable response and write to conn
+	if err != nil {
+		log.Fatal("Error when invoking handler:\r\n", err)
+	}
+	formattedRes := response.Format()
+
+	_, err = conn.Write(formattedRes)
+	if err != nil {
+		log.Fatal("Response could not be written to connection:\r\n", err)
+	}
 }
 
 // Run listens on the port its given
