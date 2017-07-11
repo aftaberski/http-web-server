@@ -32,4 +32,5 @@ func main() {
 `NewResponse()`: creates a new `Response` instance. Takes the HTTP protocol (currently only "HTTP/1.1"), status code, status message, array of headers, and byte array for the body.
 
 ## Future Improvements
-* TBD
+* Allow chunked tranfer encoding
+* Implement connection pooling
