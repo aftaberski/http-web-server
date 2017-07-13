@@ -34,3 +34,5 @@ func main() {
 ## Future Improvements
 * Allow chunked transfer encoding
 * Implement connection pooling
+* Allow middleware
+* Write tests
